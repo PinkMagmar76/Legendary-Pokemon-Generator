@@ -1,19 +1,16 @@
-// Legendary Pokémon list (wheel options)
 const legendaryPokemon = [
   "Mewtwo", "Mew", "Lugia", "Ho-Oh", "Raikou", "Entei", "Suicune",
   "Regirock", "Regice", "Registeel", "Latias", "Latios",
   "Kyogre", "Groudon", "Rayquaza", "Jirachi", "Deoxys"
 ];
 
-// Secret Pokémon (not on wheel)
 const secretPokemon = "Magmar";
-const secretChance = 0.05; // 5% chance
+const secretChance = 0.05;
 
 const wheel = document.getElementById("wheel");
 const result = document.getElementById("result");
 const generateBtn = document.getElementById("generateBtn");
 
-// Build wheel slices dynamically
 function buildWheel() {
   const sliceCount = legendaryPokemon.length;
   const angleStep = 360 / sliceCount;
@@ -22,11 +19,10 @@ function buildWheel() {
     const slice = document.createElement("div");
     slice.className = "slice";
 
-    // Correct, reliable slice positioning
+    // Perfect wedge layout
     slice.style.transform = `
       rotate(${i * angleStep}deg)
-      translate(0, -100%)
-      rotate(${angleStep / 2}deg)
+      skewY(${90 - angleStep}deg)
     `;
 
     slice.textContent = name;
@@ -36,11 +32,9 @@ function buildWheel() {
 
 buildWheel();
 
-// Spin + generate logic
 generateBtn.addEventListener("click", () => {
   result.textContent = "";
 
-  // Secret Magmar chance
   if (Math.random() < secretChance) {
     spinRandom();
     setTimeout(() => {
@@ -49,11 +43,9 @@ generateBtn.addEventListener("click", () => {
     return;
   }
 
-  // Pick a random legendary
   const index = Math.floor(Math.random() * legendaryPokemon.length);
   const selected = legendaryPokemon[index];
 
-  // Spin wheel to selected slice
   const sliceAngle = 360 / legendaryPokemon.length;
   const targetAngle = 360 * 5 + (index * sliceAngle);
   wheel.style.transform = `rotate(-${targetAngle}deg)`;
@@ -63,7 +55,6 @@ generateBtn.addEventListener("click", () => {
   }, 4000);
 });
 
-// Random spin for Magmar (no alignment needed)
 function spinRandom() {
   const randomAngle = 360 * 5 + Math.random() * 360;
   wheel.style.transform = `rotate(-${randomAngle}deg)`;
