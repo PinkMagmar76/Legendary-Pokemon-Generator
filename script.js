@@ -1,61 +1,104 @@
-const legendaryPokemon = [
-  "Mewtwo", "Mew", "Lugia", "Ho-Oh", "Raikou", "Entei", "Suicune",
-  "Regirock", "Regice", "Registeel", "Latias", "Latios",
-  "Kyogre", "Groudon", "Rayquaza", "Jirachi", "Deoxys"
-];
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const genBtn = document.getElementById('genBtn');
+const resetBtn = document.getElementById('resetBtn');
+const resultDisplay = document.getElementById('result');
 
-const secretPokemon = "Magmar";
-const secretChance = 0.05;
+const legendaries = ["Mewtwo", "Lugia", "Rayquaza", "Dialga", "Arceus", "Zekrom", "Xerneas", "Solgaleo", "Zacian", "Koraidon"];
+const colors = ["#1a1a1a", "#252525", "#1a1a1a", "#252525", "#1a1a1a", "#252525", "#1a1a1a", "#252525", "#1a1a1a", "#252525"];
 
-const wheel = document.getElementById("wheel");
-const result = document.getElementById("result");
-const generateBtn = document.getElementById("generateBtn");
+let currentRotation = 0;
+const totalSegments = legendaries.length;
+const arcSize = (2 * Math.PI) / totalSegments;
 
-function buildWheel() {
-  const sliceCount = legendaryPokemon.length;
-  const angleStep = 360 / sliceCount;
+function drawWheel() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < totalSegments; i++) {
+        const angle = i * arcSize + currentRotation;
+        
+        // Draw Segments
+        ctx.beginPath();
+        ctx.fillStyle = colors[i];
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 190, angle, angle + arcSize);
+        ctx.lineTo(200, 200);
+        ctx.fill();
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 2;
+        ctx.stroke();
 
-  legendaryPokemon.forEach((name, i) => {
-    const slice = document.createElement("div");
-    slice.className = "slice";
-
-    // Rotate slice around the wheel
-    slice.style.transform = `rotate(${i * angleStep}deg)`;
-
-    // Give each slice a color
-    slice.style.background = `hsl(${i * angleStep}, 70%, 40%)`;
-
-    slice.textContent = name;
-    wheel.appendChild(slice);
-  });
+        // Draw Text
+        ctx.save();
+        ctx.translate(200, 200);
+        ctx.rotate(angle + arcSize / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#bbb";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText(legendaries[i], 170, 5);
+        ctx.restore();
+    }
 }
 
-buildWheel();
+function spin() {
+    genBtn.disabled = true;
+    resultDisplay.innerText = "Spinning...";
+    resultDisplay.style.color = "white";
+    
+    // 5% Secret Chance Logic
+    const isMagmar = Math.random() < 0.05;
+    
+    const extraSpins = 7 + Math.random() * 5; 
+    const randomOffset = Math.random() * (2 * Math.PI);
+    const targetRotation = currentRotation + (extraSpins * 2 * Math.PI) + randomOffset;
+    
+    const duration = 5000; // 5 seconds of spinning
+    const start = performance.now();
 
-generateBtn.addEventListener("click", () => {
-  result.textContent = "";
+    function animate(time) {
+        let elapsed = time - start;
+        let progress = Math.min(elapsed / duration, 1);
+        
+        // Cubic ease-out formula
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        
+        currentRotation = (targetRotation * easeOut);
+        drawWheel();
 
-  if (Math.random() < secretChance) {
-    spinRandom();
-    setTimeout(() => {
-      result.textContent = "🔥 Secret Pokémon: Magmar!";
-    }, 4000);
-    return;
-  }
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            finalizeResult(isMagmar);
+        }
+    }
+    requestAnimationFrame(animate);
+}
 
-  const index = Math.floor(Math.random() * legendaryPokemon.length);
-  const selected = legendaryPokemon[index];
+function finalizeResult(isMagmar) {
+    genBtn.disabled = false;
+    
+    if (isMagmar) {
+        resultDisplay.innerText = "🔥 SECRET: MAGMAR 🔥";
+        resultDisplay.style.color = "#ff4500";
+    } else {
+        // Calculate the winning slice based on the pointer (at top)
+        const normalizedRotation = (currentRotation % (2 * Math.PI));
+        const pointerAngle = (3 * Math.PI / 2) - normalizedRotation;
+        let index = Math.floor((pointerAngle / arcSize) % totalSegments);
+        if (index < 0) index += totalSegments;
+        
+        resultDisplay.innerText = legendaries[index];
+        resultDisplay.style.color = "#ffd700";
+    }
+}
 
-  const sliceAngle = 360 / legendaryPokemon.length;
-  const targetAngle = 360 * 5 + (index * sliceAngle);
-  wheel.style.transform = `rotate(-${targetAngle}deg)`;
-
-  setTimeout(() => {
-    result.textContent = `⭐ You got: ${selected}!`;
-  }, 4000);
+resetBtn.addEventListener('click', () => {
+    currentRotation = 0;
+    drawWheel();
+    resultDisplay.innerText = "Wheel Reset";
+    resultDisplay.style.color = "#888";
 });
 
-function spinRandom() {
-  const randomAngle = 360 * 5 + Math.random() * 360;
-  wheel.style.transform = `rotate(-${randomAngle}deg)`;
-}
+genBtn.addEventListener('click', spin);
+
+// Initial Render
+drawWheel();
