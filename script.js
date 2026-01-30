@@ -19,7 +19,7 @@ function buildWheel() {
     const slice = document.createElement("div");
     slice.className = "slice";
 
-    // Rotate slice into position
+    // Rotate slice around the wheel
     slice.style.transform = `rotate(${i * angleStep}deg)`;
 
     // Give each slice a color
@@ -59,4 +59,3 @@ function spinRandom() {
   const randomAngle = 360 * 5 + Math.random() * 360;
   wheel.style.transform = `rotate(-${randomAngle}deg)`;
 }
-
