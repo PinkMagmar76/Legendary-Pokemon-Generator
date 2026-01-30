@@ -22,8 +22,12 @@ function buildWheel() {
     const slice = document.createElement("div");
     slice.className = "slice";
 
-    // Position slice around the wheel
-    slice.style.transform = `rotate(${i * angleStep}deg) translate(0, -100%)`;
+    // Correct, reliable slice positioning
+    slice.style.transform = `
+      rotate(${i * angleStep}deg)
+      translate(0, -100%)
+      rotate(${angleStep / 2}deg)
+    `;
 
     slice.textContent = name;
     wheel.appendChild(slice);
@@ -51,7 +55,7 @@ generateBtn.addEventListener("click", () => {
 
   // Spin wheel to selected slice
   const sliceAngle = 360 / legendaryPokemon.length;
-  const targetAngle = 360 * 5 + (index * sliceAngle); // 5 full spins + landing
+  const targetAngle = 360 * 5 + (index * sliceAngle);
   wheel.style.transform = `rotate(-${targetAngle}deg)`;
 
   setTimeout(() => {
