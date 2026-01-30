@@ -1,34 +1,8 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background: #121212;
-  color: #ffffff;
-  padding: 40px;
-}
-
-h1 {
-  margin-bottom: 20px;
-}
-
-button {
-  padding: 12px 20px;
-  font-size: 16px;
-  background: #333;
-  color: white;
-  border: 2px solid #555;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #444;
-}
-
-/* Increase wheel size */
+/* Bigger wheel */
 .wheel-container {
   margin: 40px auto;
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
   position: relative;
 }
 
@@ -36,25 +10,26 @@ button:hover {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 8px solid #888;
+  border: 10px solid #888;
   position: relative;
   overflow: hidden;
   transition: transform 4s cubic-bezier(.17,.67,.83,.67);
 }
 
-/* Radial slices with more room */
+/* Radial slices with no overlap */
 .slice {
   position: absolute;
   width: 50%;
-  height: 55px; /* increased from 40px */
+  height: 32px; /* reduced height to prevent overlap */
   top: 50%;
   left: 50%;
   transform-origin: 0% 50%;
   display: flex;
   align-items: center;
-  padding-left: 14px; /* more padding for readability */
+  padding-left: 12px;
   color: white;
-  font-size: 16px; /* larger text */
+  font-size: 14px;
   text-shadow: 1px 1px 2px black;
   border-top: 1px solid rgba(255,255,255,0.15);
 }
+
