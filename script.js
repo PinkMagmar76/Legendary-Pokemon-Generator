@@ -19,11 +19,11 @@ function buildWheel() {
     const slice = document.createElement("div");
     slice.className = "slice";
 
-    // Perfect wedge layout
-    slice.style.transform = `
-      rotate(${i * angleStep}deg)
-      skewY(${90 - angleStep}deg)
-    `;
+    // Rotate slice into position
+    slice.style.transform = `rotate(${i * angleStep}deg)`;
+
+    // Give each slice a color
+    slice.style.background = `hsl(${i * angleStep}, 70%, 40%)`;
 
     slice.textContent = name;
     wheel.appendChild(slice);
@@ -59,3 +59,4 @@ function spinRandom() {
   const randomAngle = 360 * 5 + Math.random() * 360;
   wheel.style.transform = `rotate(-${randomAngle}deg)`;
 }
+
